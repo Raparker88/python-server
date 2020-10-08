@@ -1,8 +1,8 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from animals import get_all_animals, get_single_animal
-from employees import get_all_employees, get_single_employee
-from locations import get_all_locations, get_single_location
-from customers import get_all_customers, get_single_customer
+from animals import get_all_animals, get_single_animal, create_animal, delete_animal
+from employees import get_all_employees, get_single_employee, create_employee, delete_employee
+from locations import get_all_locations, get_single_location, create_location, delete_location
+from customers import get_all_customers, get_single_customer, create_customer, delete_customer
 import json
 
 # Here's a class. It inherits from another class.
@@ -78,19 +78,55 @@ class HandleRequests(BaseHTTPRequestHandler):
     # Here's a method on the class that overrides the parent's method.
     # It handles any POST request.
     def do_POST(self):
-        # Set response code to 'Created'
         self._set_headers(201)
-
         content_len = int(self.headers.get('content-length', 0))
         post_body = self.rfile.read(content_len)
-        response = f"received post request:<br>{post_body}"
-        self.wfile.write(response.encode())
+
+        # Convert JSON string to a Python dictionary
+        post_body = json.loads(post_body)
+
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
+
+        # Initialize new animal
+        new_post = None
+
+        # Add a new animal to the list. Don't worry about
+        # the orange squiggle, you'll define the create_animal
+        # function next.
+        if resource == "animals":
+            new_post = create_animal(post_body)
+        if resource == "customers":
+            new_post = create_customer(post_body)
+        if resource == "employees":
+            new_post = create_employee(post_body)
+        if resource == "locations":
+            new_post = create_location(post_body)
 
 
-    # Here's a method on the class that overrides the parent's method.
-    # It handles any PUT request.
-    def do_PUT(self):
-        self.do_POST()
+        # Encode the new animal and send in response
+        self.wfile.write(f"{new_post}".encode())
+
+    def do_DELETE(self):
+        # Set a 204 response code
+        self._set_headers(204)
+
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
+
+        # Delete a single animal from the list
+        if resource == "animals":
+            delete_animal(id)
+        if resource == "customers":
+            delete_animal(id)
+        if resource == "employees":
+            delete_employee(id)
+        if resource == "locations":
+            delete_location(id)
+        
+
+        # Encode the new animal and send in response
+        self.wfile.write("".encode())
 
 
 # This function is not inside the class. It is the starting
