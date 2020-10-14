@@ -68,3 +68,7 @@ SELECT * FROM Location;
 SELECT * FROM Customer;
 SELECT * FROM Employee;
 SELECT * FROM Animal;
+
+
+
+

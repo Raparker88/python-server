@@ -2,40 +2,7 @@ import sqlite3
 import json
 from models import Customer
 
-CUSTOMERS = [
-    {
-      "id": 1,
-      "name": "Hannah Hall",
-      "address": "7002 Chestnut Ct"
-    },
-    {
-      "id": 2,
-      "name": "Billy Bob",
-      "address": "123 Main St."
-    },
-    {
-      "id": 3,
-      "name": "Tammy Thunder",
-      "address": "123 Greenview Dr."
-    },
-    {
-      "id": 4,
-      "name": "Larry Loser",
-      "address": "700 Harrison ln."
-    },
-    {
-      "email": "becca@becca.com",
-      "password": "me",
-      "name": "Rebecca Parker",
-      "id": 5
-    },
-    {
-      "email": "r@r.com",
-      "password": "me",
-      "name": "Rebecca Parker",
-      "id": 6
-    }
-]
+
 
 
 def get_all_customers():
@@ -112,14 +79,13 @@ def create_customer(customer):
 
 
 def delete_customer(id):
-    customer_index = -1
+    with sqlite3.connect("./kennel.db") as conn:
+        db_cursor = conn.cursor()
 
-    for index, customer in enumerate(CUSTOMERS):
-        if customer["id"] == id:
-            customer_index = index
-
-    if customer_index >= 0:
-        CUSTOMERS.pop(customer_index)
+        db_cursor.execute("""
+        DELETE FROM customer
+        WHERE id = ?
+        """, (id, ))
 
 def update_customer(id, new_customer):
 
