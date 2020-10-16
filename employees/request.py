@@ -63,17 +63,23 @@ def get_single_employee(id):
         return json.dumps(employee.__dict__)
 
 
-def create_employee(employee):
+def create_employee(new_employee):
 
-    max_id = EMPLOYEES[-1]["id"]
+    with sqlite3.connect("./kennel.db") as conn:
+        db_cursor = conn.cursor()
 
-    new_id = max_id + 1
+        db_cursor.execute("""
+        INSERT INTO Employee
+            ( name, address, location_id )
+        VALUES
+            ( ?, ?, ? );
+        """, (new_employee['name'], new_employee['address'], new_employee['locationId'], ))
 
-    employee["id"] = new_id
+        id = db_cursor.lastrowid
 
-    EMPLOYEES.append(employee)
-
-    return employee
+        new_employee['id'] = id
+        
+    return json.dumps(new_animal)
 
 def delete_employee(id):
     with sqlite3.connect("./kennel.db") as conn:
